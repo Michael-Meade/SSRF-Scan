@@ -11,7 +11,6 @@ class Reports
         @url
     end
     def save_site
-        
         # Creates a "reports" directory if it does not exists
         # It will also create a directory with the name of url
         directory = File.join("reports", url)

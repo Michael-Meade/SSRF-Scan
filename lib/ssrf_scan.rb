@@ -20,7 +20,27 @@ OptionParser.new do |o|
   end
 end.parse!
 
-
+def requests(url, url2)
+  hydra = Typhoeus::Hydra.hydra
+  r = Typhoeus::Request.new(url)
+  hydra.queue(r)
+  r.on_complete do |response|
+    # get the response code
+    code = response.code.to_i
+    puts code
+    r = Typhoeus::Request.new(url)
+    # if the response code has the 
+    # the status of 200
+    if code.to_i  == 200
+        uri = URI(url).host
+        Reports.new(uri, url).save_site
+    end
+  end
+  
+  second_r = Typhoeus::Request.new(url2)
+  hydra.queue second_r
+  hydra.run
+end
 
 
 if options[:ps]
@@ -29,21 +49,9 @@ if options[:ps]
     # combine the URL and the IP for the port
     url      = options[:url].gsub("SSRF", options[:ps] + ":")
     for i in 0..max_port.to_i
-        r = Typhoeus::Request.new(url + i.to_s)
-        r.on_complete do |response|
-            # get the response code
-            code = response.code.to_i
-            puts url + i .to_s
-            # if the response code has the 
-            # the status of 200
-            if code.to_i  == 200
-                data = url + i .to_s
-                uri = URI(url).host
-                Reports.new(uri, data).save_site
-            end
-        end
-        r.run
-        i+=1
+      ii = i+=1
+      requests(url + i.to_s, url + ii.to_s)
+      i+=2
     end
 end
 
