@@ -25,9 +25,9 @@ def requests(url, url2)
   r = Typhoeus::Request.new(url)
   hydra.queue(r)
   r.on_complete do |response|
+    puts response.headers
     # get the response code
     code = response.code.to_i
-    puts code
     r = Typhoeus::Request.new(url)
     # if the response code has the 
     # the status of 200
